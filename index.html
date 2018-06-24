@@ -3,7 +3,7 @@
 	<head>
 		<style>
 		input:invalid {
-		  border: 1px solid #ff0000;
+		  border: 2px solid #ff0000;
 		}
 		body{
 			margin: 0;
@@ -15,10 +15,13 @@
 			align-content: center;
 			grid-template-columns: auto auto;
 			grid-column-gap: 50px;
-			height: 100vh;
+			height: 80vh;
+		}
+		header{
+			align-content: center;
 		}
 		.error{
-			font-color: red;
+			color: red;
 		}
 		</style>
 		<script src="https://unpkg.com/dsteem@^0.8.0/dist/dsteem.js"></script>
@@ -48,7 +51,7 @@
 					client.broadcast.sendOperations(operations, key)
 					.then( (e,r)=>{
 						console.log(e);
-						document.getElementById("message").class="";
+						document.getElementById("message").className ="";
 						document.getElementById("message").innerHTML="Convert started!"; 
 					})
 					.catch( e=>errorHandling(e) )
@@ -59,12 +62,15 @@
 			}
 			function errorHandling(e){
 				console.log(e);
-				document.getElementById("message").class="error";
+				document.getElementById("message").className ="error";
 				document.getElementById("message").innerHTML=e.message;
 			}
 		</script>
 	</head>
 	<body>
+		<header>
+			<h1>SBD-Converter</h1>
+		</header>
 		<form id="convertForm">
 			<table>
 			<label for="username">Username</label>
