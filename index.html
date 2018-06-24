@@ -10,15 +10,19 @@
 		}
 		#convertForm{
 			display: grid;
-			margin: 0 auto;
+			margin: 50px 0 auto auto;
 			justify-content: center;
 			align-content: center;
 			grid-template-columns: auto auto;
 			grid-column-gap: 50px;
-			height: 80vh;
+			grid-row-gap: 10px;
 		}
-		header{
-			align-content: center;
+		header h1{
+			text-align: center;
+		}
+		header #notice{
+			margin: 0 auto;
+			max-width: 50vw;
 		}
 		.error{
 			color: red;
@@ -39,13 +43,14 @@
 					var unit = document.getElementById("unit").value;
 					var akey = document.getElementById("active-key").value;
 					var key = dsteem.PrivateKey.from(akey);
+					var requestid = 
 					
 					var operations = [];
 					operations.push(
 						[ "convert", 
-						{amount: "0.001 SBD",
-						owner: "mwfiae",
-						requestid: 1}]
+						{amount: amount +" "+unit,
+						owner: username,
+						requestid: new Date().getTime() % Number.MAX_SAFE_INTEGER }]
 					);
 					
 					client.broadcast.sendOperations(operations, key)
@@ -70,21 +75,21 @@
 	<body>
 		<header>
 			<h1>SBD-Converter</h1>
+			<p id="notice">With this converter you can trade your SBD like they are worth 1$. So this should only be used if the sbd price is below 1$ otherwise you will be losing out! Also note, that conversion takes 3.5 days to complete.</p>
 		</header>
 		<form id="convertForm">
 			<table>
 			<label for="username">Username</label>
-			<input id="username" pattern="[a-z][a-z0-9\-]+[a-z0-9]" maxLength="16" required></input>
+			<input id="username" pattern="[a-z][a-z0-9\-]+[a-z0-9]" maxLength="16" title="Your username on steemit without @ and without capital letters" required></input>
 			<label for="amount">Amount</label>
 			<span>
-				<input id="amount" type="number" step="0.001" min="0.001" pattern="[0-9]*((,|.)[0-9]{,3})" value="1" required></input>
-				<select id="unit">
+				<input id="amount" type="number" step="0.001" min="0.001" pattern="[0-9]*((,|.)[0-9]{,3})" value="1" title="The amount of SBD you want to convert to Steem" required></input>
+				<select id="unit" disabled>
 					<option>SBD</option>
-					<option>Steem</option>
 				</select>
 			</span>
 			<label for="active-key">Active Key</label>
-			<input id="active-key" type="password"  onchange="this.setCustomValidity('')" required></input>
+			<input id="active-key" type="password" title="This must be your private active key! The key never leaves your browser, so don't worry :)" onchange="this.setCustomValidity('')" required></input>
 			<button type="button" onclick="convert();return false;">Convert!</button>
 			<span id="message"></span>
 		</form>
