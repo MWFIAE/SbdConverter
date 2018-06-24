@@ -1,1 +1,86 @@
-<h1>Sbd-Converter!</h1> by <a href="https://steemit.com/@mwfiae">@mwfiae</a>
+<!DOCTYPE html>
+<html>
+	<head>
+		<style>
+		input:invalid {
+		  border: 1px solid #ff0000;
+		}
+		body{
+			margin: 0;
+		}
+		#convertForm{
+			display: grid;
+			margin: 0 auto;
+			justify-content: center;
+			align-content: center;
+			grid-template-columns: auto auto;
+			grid-column-gap: 50px;
+			height: 100vh;
+		}
+		.error{
+			font-color: red;
+		}
+		</style>
+		<script src="https://unpkg.com/dsteem@^0.8.0/dist/dsteem.js"></script>
+		<script type="text/javascript">
+			var client = new dsteem.Client('https://api.steemit.com');
+			function convert(){
+				var form = document.getElementById("convertForm");
+				if(!form.checkValidity()){
+					alert("Input invalid!");
+					return;
+				}
+				try{
+					var username = document.getElementById("username").value;
+					var amount = document.getElementById("amount").value;
+					var unit = document.getElementById("unit").value;
+					var akey = document.getElementById("active-key").value;
+					var key = dsteem.PrivateKey.from(akey);
+					
+					var operations = [];
+					operations.push(
+						[ "convert", 
+						{amount: "0.001 SBD",
+						owner: "mwfiae",
+						requestid: 1}]
+					);
+					
+					client.broadcast.sendOperations(operations, key)
+					.then( (e,r)=>{
+						console.log(e);
+						document.getElementById("message").class="";
+						document.getElementById("message").innerHTML="Convert started!"; 
+					})
+					.catch( e=>errorHandling(e) )
+				}catch(e){ 
+					errorHandling(e);
+					document.getElementById("active-key").setCustomValidity("Invalid key.");
+				}
+			}
+			function errorHandling(e){
+				console.log(e);
+				document.getElementById("message").class="error";
+				document.getElementById("message").innerHTML=e.message;
+			}
+		</script>
+	</head>
+	<body>
+		<form id="convertForm">
+			<table>
+			<label for="username">Username</label>
+			<input id="username" pattern="[a-z][a-z0-9\-]+[a-z0-9]" maxLength="16" required></input>
+			<label for="amount">Amount</label>
+			<span>
+				<input id="amount" type="number" step="0.001" min="0.001" pattern="[0-9]*((,|.)[0-9]{,3})" value="1" required></input>
+				<select id="unit">
+					<option>SBD</option>
+					<option>Steem</option>
+				</select>
+			</span>
+			<label for="active-key">Active Key</label>
+			<input id="active-key" type="password"  onchange="this.setCustomValidity('')" required></input>
+			<button type="button" onclick="convert();return false;">Convert!</button>
+			<span id="message"></span>
+		</form>
+	</body>
+</html>
