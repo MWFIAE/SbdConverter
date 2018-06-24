@@ -37,20 +37,22 @@
 					alert("Input invalid!");
 					return;
 				}
+				
 				try{
+					document.getElementById("convertButton").disabled=true;
 					var username = document.getElementById("username").value;
 					var amount = document.getElementById("amount").value;
 					var unit = document.getElementById("unit").value;
 					var akey = document.getElementById("active-key").value;
 					var key = dsteem.PrivateKey.from(akey);
-					var requestid = 
+					var requestid = new Date().getTime() % Number.MAX_SAFE_INTEGER
 					
 					var operations = [];
 					operations.push(
 						[ "convert", 
 						{amount: amount +" "+unit,
 						owner: username,
-						requestid: new Date().getTime() % Number.MAX_SAFE_INTEGER }]
+						requestid: requestid }]
 					);
 					
 					client.broadcast.sendOperations(operations, key)
@@ -58,6 +60,7 @@
 						console.log(e);
 						document.getElementById("message").className ="";
 						document.getElementById("message").innerHTML="Convert started!"; 
+						document.getElementById("convertButton").disabled=false;
 					})
 					.catch( e=>errorHandling(e) )
 				}catch(e){ 
@@ -69,6 +72,7 @@
 				console.log(e);
 				document.getElementById("message").className ="error";
 				document.getElementById("message").innerHTML=e.message;
+				document.getElementById("convertButton").disabled=false;
 			}
 		</script>
 	</head>
@@ -90,7 +94,7 @@
 			</span>
 			<label for="active-key">Active Key</label>
 			<input id="active-key" type="password" title="This must be your private active key! The key never leaves your browser, so don't worry :)" onchange="this.setCustomValidity('')" required></input>
-			<button type="button" onclick="convert();return false;">Convert!</button>
+			<button id="convertButton" type="button" onclick="convert();return false;">Convert!</button>
 			<span id="message"></span>
 		</form>
 	</body>
