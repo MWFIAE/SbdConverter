@@ -30,8 +30,13 @@
 		</style>
 		<script src="https://unpkg.com/dsteem@^0.8.0/dist/dsteem.js"></script>
 		<script type="text/javascript">
+			
+			// Initialize dsteem
 			var client = new dsteem.Client('https://api.steemit.com');
+			
 			function convert(){
+				
+				// Check if the form is valid (this means the patterns, requirements and maxvalues defined in the html are considered) 
 				var form = document.getElementById("convertForm");
 				if(!form.checkValidity()){
 					alert("Input invalid!");
@@ -39,14 +44,21 @@
 				}
 				
 				try{
+					// Get the values from the input fields
 					document.getElementById("convertButton").disabled=true;
 					var username = document.getElementById("username").value;
 					var amount = document.getElementById("amount").value;
 					var unit = document.getElementById("unit").value;
 					var akey = document.getElementById("active-key").value;
+					
+					// Parse the key using dsteem
 					var key = dsteem.PrivateKey.from(akey);
+					
+					// For the requestid we need a unique number. To keep it simple I just get the current time in milliseconds
+					// The modulo operator is just an additional security measure, so that the number doesn't overflow the uint32
 					var requestid = new Date().getTime() % Number.MAX_SAFE_INTEGER
 					
+					// create our operation
 					var operations = [];
 					operations.push(
 						[ "convert", 
@@ -55,6 +67,7 @@
 						requestid: requestid }]
 					);
 					
+					//and broadcast it to the blockchain
 					client.broadcast.sendOperations(operations, key)
 					.then( (e,r)=>{
 						console.log(e);
